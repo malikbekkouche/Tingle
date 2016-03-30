@@ -82,17 +82,18 @@
     </LinearLayout>
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/search"
         android:text="@string/searchString"
         android:layout_gravity="center"
         />
-        <!-- android version ?
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/version"/> -->
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/barcode"
+            android:text="@string/use_camera"
+            />
         </LinearLayout>
     <LinearLayout
         android:orientation="vertical"

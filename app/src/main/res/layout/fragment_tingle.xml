@@ -90,11 +90,13 @@
         android:id="@+id/list_all"
         android:text="@string/list_all_things"
         />
-    <!-- android version ?
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/version"/> -->
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/barcode"
+        android:text="@string/use_camera"
+        />
 
 
     </LinearLayout>

@@ -21,7 +21,7 @@ public class TingleFragment extends Fragment{
 
     private static ThingsDB thingsDB;
 
-    private Button addThing,searchThing,mShowAll;
+    private Button addThing,searchThing,mShowAll,mCamera;
     private TextView lastAdded;
     private TextView newWhat,newWhere;
 
@@ -48,8 +48,18 @@ public class TingleFragment extends Fragment{
         newWhat=(TextView) v.findViewById(R.id.what_text);
         newWhere=(TextView) v.findViewById(R.id.where_text);
 
+
         // version=(TextView) findViewById(R.id.version);
         // version.setText(Build.VERSION.CODENAME);
+
+        mCamera=(Button)v.findViewById(R.id.barcode);
+        mCamera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent("com.google.zxing.client.android.SCAN");
+                startActivityForResult(intent,0);
+            }
+        });
 
         addThing.setOnClickListener(new View.OnClickListener() {
 
@@ -118,6 +128,12 @@ public class TingleFragment extends Fragment{
         for(int i=0;i<thingsDB.size();i++)
             allThings.add(thingsDB.get(i).toString());
         return allThings;
+    }
+    @Override
+    public void onActivityResult(int requestCode,int resultCode,Intent intent){
+        String contents = intent.getStringExtra("SCAN_RESULT");
+        String format = intent.getStringExtra("SCAN_RESULT_FORMAT");
+        Toast.makeText(this.getContext(),contents,Toast.LENGTH_SHORT);
     }
 
 }

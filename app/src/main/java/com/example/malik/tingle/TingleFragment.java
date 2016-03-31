@@ -1,7 +1,11 @@
 package com.example.malik.tingle;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -12,6 +16,11 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 
 /**
@@ -20,6 +29,7 @@ import java.util.ArrayList;
 public class TingleFragment extends Fragment{
 
     private static ThingsDB thingsDB;
+    private static final String KEY="f6957104c74fdf82e23499b5ad1f82c1";
 
     private Button addThing,searchThing,mShowAll,mCamera;
     private TextView lastAdded;
@@ -57,6 +67,7 @@ public class TingleFragment extends Fragment{
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent("com.google.zxing.client.android.SCAN");
+                intent.putExtra("SCAN_MODE", "PRODUCT_MODE");
                 startActivityForResult(intent,0);
             }
         });
@@ -133,7 +144,64 @@ public class TingleFragment extends Fragment{
     public void onActivityResult(int requestCode,int resultCode,Intent intent){
         String contents = intent.getStringExtra("SCAN_RESULT");
         String format = intent.getStringExtra("SCAN_RESULT_FORMAT");
-        Toast.makeText(this.getContext(),contents,Toast.LENGTH_SHORT);
+        //Toast.makeText(this.getContext(),contents,Toast.LENGTH_SHORT).show();
+        new FetchOutpanTask().execute(contents);
+    }
+
+    public class CodeBarConnectivity {
+
+        public String getProduct(String url) {
+            ConnectivityManager conMan = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo netInfo = conMan.getActiveNetworkInfo();
+            if (netInfo != null && netInfo.isConnected()) {
+                try {
+                   return getUrlString(url);
+                }catch(IOException e){
+
+                }
+            }
+            return null;
+        }
+
+        public byte[] getUrlBytes(String urlSpec) throws IOException {
+            URL url = new URL(urlSpec);
+            HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+            try {
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                InputStream in = connection.getInputStream();
+                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                    throw new IOException(connection.getResponseMessage() +
+                            ": with " +
+                            urlSpec);
+                }
+                int bytesRead = 0;
+                byte[] buffer = new byte[1024];
+                while ((bytesRead = in.read(buffer)) > 0) {
+                    out.write(buffer, 0, bytesRead);
+                }
+                out.close();
+                return out.toByteArray();
+            } finally {
+                connection.disconnect();
+            }
+        }
+        public String getUrlString(String urlSpec) throws IOException {
+            return new String(getUrlBytes(urlSpec));
+        }
+    }
+
+    public class FetchOutpanTask extends AsyncTask<String,Void,String> {
+        @Override
+        protected String doInBackground(String... params) {
+           return new CodeBarConnectivity().getProduct("https://api.outpan.com/v2/products/"+params[0]+"/?"+KEY);
+        }
+
+        @Override
+        protected void onPostExecute(String str) {
+            super.onPostExecute(str);
+            Toast.makeText(getActivity(),str,Toast.LENGTH_SHORT).show();
+
+        }
     }
 
 }

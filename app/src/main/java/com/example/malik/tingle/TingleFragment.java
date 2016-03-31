@@ -9,12 +9,16 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -155,12 +159,20 @@ public class TingleFragment extends Fragment{
             NetworkInfo netInfo = conMan.getActiveNetworkInfo();
             if (netInfo != null && netInfo.isConnected()) {
                 try {
-                   return getUrlString(url);
+                    String result= getUrlString(url);
+                    JSONObject json=new JSONObject(result);
+                    return parse(json);
                 }catch(IOException e){
+
+                }catch(JSONException ee){
 
                 }
             }
             return null;
+        }
+
+        public String parse(JSONObject json)throws JSONException{
+           return json.getString("name");
         }
 
         public byte[] getUrlBytes(String urlSpec) throws IOException {
@@ -200,6 +212,7 @@ public class TingleFragment extends Fragment{
         protected void onPostExecute(String str) {
             super.onPostExecute(str);
             Toast.makeText(getActivity(),str,Toast.LENGTH_SHORT).show();
+           // Log.d("ici", str);
 
         }
     }

@@ -34,6 +34,7 @@ public class TingleFragment extends Fragment{
 
     private static ThingsDB thingsDB;
     private static final String KEY="f6957104c74fdf82e23499b5ad1f82c1";
+    private static final String INTERNET="no internet connection";
 
     private Button addThing,searchThing,mShowAll,mCamera;
     private TextView lastAdded;
@@ -148,7 +149,7 @@ public class TingleFragment extends Fragment{
     public void onActivityResult(int requestCode,int resultCode,Intent intent){
         String contents = intent.getStringExtra("SCAN_RESULT");
         String format = intent.getStringExtra("SCAN_RESULT_FORMAT");
-        //Toast.makeText(this.getContext(),contents,Toast.LENGTH_SHORT).show();
+
         new FetchOutpanTask().execute(contents);
     }
 
@@ -167,6 +168,8 @@ public class TingleFragment extends Fragment{
                 }catch(JSONException ee){
 
                 }
+            }else{
+                return INTERNET;
             }
             return null;
         }
@@ -205,7 +208,8 @@ public class TingleFragment extends Fragment{
     public class FetchOutpanTask extends AsyncTask<String,Void,String> {
         @Override
         protected String doInBackground(String... params) {
-           return new CodeBarConnectivity().getProduct("https://api.outpan.com/v2/products/"+params[0]+"/?"+KEY);
+            Log.d("ici",params[0]);
+           return new CodeBarConnectivity().getProduct("https://api.outpan.com/v2/products/"+params[0]+"/?apikey="+KEY);
         }
 
         @Override
@@ -213,6 +217,8 @@ public class TingleFragment extends Fragment{
             super.onPostExecute(str);
             Toast.makeText(getActivity(),str,Toast.LENGTH_SHORT).show();
            // Log.d("ici", str);
+            if(!str.equals(INTERNET))
+            newWhat.setText(str);
 
         }
     }

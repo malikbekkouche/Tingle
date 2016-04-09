@@ -19,7 +19,8 @@ public class ThingBaseHelper extends SQLiteOpenHelper{
         db.execSQL("create table " + ThingDbSchema.ThingTable.NAME+" ( "+
         "_id integer primary key autoincrement ,"+
         ThingDbSchema.Cols.WHAT+", "+
-        ThingDbSchema.Cols.WHERE+")");
+        ThingDbSchema.Cols.WHERE+","+
+        ThingDbSchema.Cols.PHOTO+")");
     }
 
     @Override

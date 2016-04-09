@@ -19,8 +19,10 @@ public class ThingCursorWrapper extends CursorWrapper {
     public Thing getThing(){
         String what=getString(getColumnIndex(ThingDbSchema.Cols.WHAT));
         String where=getString(getColumnIndex(ThingDbSchema.Cols.WHERE));
+        String photo=getString(getColumnIndex(ThingDbSchema.Cols.PHOTO));
 
         Thing thing=new Thing(what,where);
+        thing.setPhoto(photo);
         return thing;
     }
 

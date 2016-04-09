@@ -100,6 +100,7 @@ public class TingleFragment extends Fragment{
             @Override
             public void onClick(View v) {
                 thing=new Thing(newWhat.getText().toString(), newWhere.getText().toString());
+                thing.setPhoto(mFile.getPath());
                 thingsDB.addThing(thing);
 
                 newWhat.setText("");

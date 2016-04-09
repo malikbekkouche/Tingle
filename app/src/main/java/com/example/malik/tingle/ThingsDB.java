@@ -94,6 +94,7 @@ public class ThingsDB {
         ContentValues contentValues=new ContentValues();
         contentValues.put(ThingDbSchema.Cols.WHAT,thing.getmWhat());
         contentValues.put(ThingDbSchema.Cols.WHERE,thing.getmWhere());
+        contentValues.put(ThingDbSchema.Cols.PHOTO,thing.getPhoto());
         return contentValues;
     }
 

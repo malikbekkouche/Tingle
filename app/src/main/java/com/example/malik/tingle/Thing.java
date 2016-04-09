@@ -9,6 +9,7 @@ public class Thing  {
     private int id;
     private String mWhat=null;
     private String mWhere=null;
+    private String mPhoto;
 
     public Thing(String what,String where){
         mWhat=what;
@@ -47,5 +48,13 @@ public class Thing  {
     public String getPhotoFilename(){
         int id=this.id+1;
         return "IMG"+id+".jpg";
+    }
+
+    public String getPhoto(){
+        return mPhoto;
+    }
+
+    public void setPhoto(String s){
+        mPhoto=s;
     }
 }

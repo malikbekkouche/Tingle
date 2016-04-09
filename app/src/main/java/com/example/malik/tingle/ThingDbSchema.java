@@ -11,6 +11,6 @@ public class ThingDbSchema {
     public static final class Cols{
         public static final String WHAT="what";
         public static final String WHERE="wher";
-        
+        public static final String PHOTO="photo";
     }
 }

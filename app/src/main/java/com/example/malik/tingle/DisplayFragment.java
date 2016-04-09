@@ -1,15 +1,19 @@
 package com.example.malik.tingle;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.w3c.dom.Text;
+
+import java.io.File;
 
 /**
  * Created by malik on 2/23/16.
@@ -22,6 +26,8 @@ public class DisplayFragment extends Fragment {
     private TextView textView;
     private String display;
     private Button delete;
+    private ImageView mPhotoView;
+    private File mFile;
 
 
     public void onCreate(Bundle savedInstanceState){
@@ -35,8 +41,14 @@ public class DisplayFragment extends Fragment {
         textView=(TextView)v.findViewById(R.id.display_message);
        // display=getActivity().getIntent().getStringExtra("value");
         int pos= getArguments().getInt(EXTRA_INT,0);
+        Thing thing=thingsDB.getThingsDB().get(pos);
+        textView.setText(thing.toString());
 
-        textView.setText((CharSequence) thingsDB.getThingsDB().get(pos).toString());
+        mPhotoView=(ImageView) v.findViewById(R.id.display_photo);
+        mFile=new File(thing.getPhoto());
+        Bitmap bitmap=BitmapMagic.getScaledBitmap(mFile.getPath(),getActivity());
+        mPhotoView.setImageBitmap(bitmap);
+
 
         delete=(Button) v.findViewById(R.id.button_delete);
         delete.setOnClickListener(new View.OnClickListener() {

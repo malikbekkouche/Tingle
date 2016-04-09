@@ -39,7 +39,7 @@
         </LinearLayout>
 
     </LinearLayout>
-   
+
     <LinearLayout
         android:weightSum="100"
         android:layout_width="match_parent"
@@ -89,8 +89,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/barcode"
-            android:text="@string/use_camera"
+            android:text="@string/scan_barcode"
             />
+  <!--      <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/camera"
+            android:text="@string/camera" /> -->
         </LinearLayout>
     <LinearLayout
         android:orientation="vertical"

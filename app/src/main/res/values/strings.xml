@@ -8,5 +8,6 @@
     <string name="title_activity_all_things">AllThingsActivity</string>
     <string name="list_all_things">show me everything </string>
     <string name="delete">Delete</string>
-    <string name="use_camera">use the camera</string>
+    <string name="scan_barcode">scan barcode</string>
+    <string name="camera">take picture</string>
 </resources>

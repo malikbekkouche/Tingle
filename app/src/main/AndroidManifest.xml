@@ -19,12 +19,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".PagerActivity"
 
+        <activity android:name=".PagerActivity"
             android:parentActivityName=".ListActivity"  ></activity>
         <activity android:name=".Display" />
         <activity android:name=".ListActivity"
                   android:parentActivityName=".TingleActivity"></activity>
+
     </application>
 
 </manifest>

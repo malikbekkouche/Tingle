@@ -14,6 +14,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,6 +41,8 @@ public class TingleFragment extends Fragment{
     private Button addThing,searchThing,mShowAll,mCamera;
     private TextView lastAdded;
     private TextView newWhat,newWhere;
+    private ImageView mPhotoView;
+    private ImageButton mPhotoButton;
 
 
     @Override
@@ -64,8 +68,6 @@ public class TingleFragment extends Fragment{
         newWhere=(TextView) v.findViewById(R.id.where_text);
 
 
-        // version=(TextView) findViewById(R.id.version);
-        // version.setText(Build.VERSION.CODENAME);
 
         mCamera=(Button)v.findViewById(R.id.barcode);
         mCamera.setOnClickListener(new View.OnClickListener() {
@@ -116,6 +118,11 @@ public class TingleFragment extends Fragment{
                 }
             });
         }
+
+        mPhotoView=(ImageView) v.findViewById(R.id.tingle_photo);
+        mPhotoButton=(ImageButton) v.findViewById(R.id.use_camera);
+
+
 
         return v;
     }

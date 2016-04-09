@@ -7,32 +7,63 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
-        <Button
+        android:orientation="horizontal"
+        android:layout_marginRight="4dp">
+
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:id="@+id/tingle_photo"
+            android:scaleType="centerInside"
+            android:background="@android:color/darker_gray"
+            android:cropToPadding="true"/>
+
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/add_button"
-            android:text="@string/text_add_button"/>
+            android:orientation="vertical">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/headline" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=" "
+            android:textSize="25dp"
+            android:id="@+id/last_thing"/>
+        </LinearLayout>
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <ImageButton
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/use_camera"
+                android:src="@android:drawable/ic_menu_camera" />
 
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/add_button"
+            android:text="@string/text_add_button"
+            android:layout_weight="78" />
 
         </LinearLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=" "
-                android:textSize="25dp"
-                android:id="@+id/last_thing"/>
+
         </LinearLayout>
 
     </LinearLayout>
@@ -91,13 +122,22 @@
         android:id="@+id/list_all"
         android:text="@string/list_all_things"
         />
-
-    <Button
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal">
+    <Button
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:id="@+id/barcode"
-        android:text="@string/use_camera"
-        />
-
+        android:text="@string/scan_barcode"
+        android:layout_weight="50" />
+    <Button
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/camera"
+        android:text="@string/camera"
+        android:layout_weight="50" />
+    </LinearLayout>
 
     </LinearLayout>

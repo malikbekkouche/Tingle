@@ -4,7 +4,9 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Environment;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,7 +44,7 @@ public class ThingsDB {
         mDatabase.insert(ThingDbSchema.ThingTable.NAME,null,values);
     }
     public int size(){
-        ThingCursorWrapper thingCursorWrapper=queryThings(null,null);
+        ThingCursorWrapper thingCursorWrapper=queryThings(null, null);
         int size=0;
         try{
             thingCursorWrapper.moveToFirst();
@@ -71,6 +73,17 @@ public class ThingsDB {
         mDatabase.execSQL("DELETE FROM "+ThingDbSchema.ThingTable.NAME+" WHERE _id in (SELECT _id FROM "+ThingDbSchema.ThingTable.NAME+" LIMIT 1 OFFSET "+p+")");
     }
 
+    public Thing getLast(){
+       /* String[] str=new String[1];
+        str[0]="(SELECT MAX(_id)  FROM TABLE)";
+        ThingCursorWrapper thingCursorWrapper=queryThings("_id =",str);*/
+        ThingCursorWrapper thingCursorWrapper=queryLast(null,null,"_id DESC LIMIT 1");
+        thingCursorWrapper.moveToFirst();
+        Thing thing=thingCursorWrapper.getThingWithID();
+        return thing;
+
+    }
+
     private ThingsDB(Context context){
         mContext=context.getApplicationContext();
         mDatabase=new ThingBaseHelper(mContext).getWritableDatabase();
@@ -95,6 +108,30 @@ public class ThingsDB {
                 null // orderBy
         );
         return new ThingCursorWrapper(cursor);
+    }
+
+    private ThingCursorWrapper queryLast(String whereClause, String[] whereArgs,String limit) {
+        Cursor cursor = mDatabase.query(
+                ThingDbSchema.ThingTable.NAME,
+                null, // Columns - null selects all columns
+                whereClause,
+                whereArgs,
+                null, // groupBy
+                null, // having
+                limit// orderBy
+        );
+        return new ThingCursorWrapper(cursor);
+    }
+
+    public File getPhotoFile(Thing thing){
+        File dir=mContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+
+        if(thing==null)
+            return new File(dir, "IMG"+1+".jpg");
+        else if (dir==null)
+            return null;
+        else
+            return new File(dir,thing.getPhotoFilename());
     }
 
 

@@ -6,7 +6,7 @@ import java.io.Serializable;
  * Created by malik on 2/4/16.
  */
 public class Thing  {
-
+    private int id;
     private String mWhat=null;
     private String mWhere=null;
 
@@ -40,5 +40,12 @@ public class Thing  {
         return(pre+" "+mWhat+" "+post+" "+mWhere);
     }
 
+    public void setID(int i){
+        id=i;
+    }
 
+    public String getPhotoFilename(){
+        int id=this.id+1;
+        return "IMG"+id+".jpg";
+    }
 }

@@ -3,10 +3,13 @@ package com.example.malik.tingle;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
@@ -23,9 +26,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -37,13 +42,22 @@ public class TingleFragment extends Fragment{
     private static ThingsDB thingsDB;
     private static final String KEY="f6957104c74fdf82e23499b5ad1f82c1";
     private static final String INTERNET="no internet connection";
+    private final int REQUEST_SCAN=1;
+    private final int REQUEST_PHOTO=2;
 
     private Button addThing,searchThing,mShowAll,mCamera;
     private TextView lastAdded;
     private TextView newWhat,newWhere;
     private ImageView mPhotoView;
     private ImageButton mPhotoButton;
+    private Thing thing;
+    private File mFile;
 
+    @Override
+    public void onResume(){
+        super.onResume();
+        updateUI(thing);
+    }
 
     @Override
 
@@ -51,6 +65,8 @@ public class TingleFragment extends Fragment{
         super.onCreate(savedInstanceState);
 
         thingsDB=ThingsDB.get(this.getContext());
+        prepare();
+        mFile=thingsDB.getPhotoFile(thing);
     }
 
 
@@ -58,7 +74,7 @@ public class TingleFragment extends Fragment{
         View v = inflater.inflate(R.layout.fragment_tingle, parent, false);
 
         lastAdded=(TextView) v.findViewById(R.id.last_thing);
-        // updateUI();
+        //updatePhoto();
 
 
         searchThing=(Button) v.findViewById(R.id.search);
@@ -75,7 +91,7 @@ public class TingleFragment extends Fragment{
             public void onClick(View v) {
                 Intent intent=new Intent("com.google.zxing.client.android.SCAN");
                 intent.putExtra("SCAN_MODE", "PRODUCT_MODE");
-                startActivityForResult(intent,0);
+                startActivityForResult(intent,REQUEST_SCAN);
             }
         });
 
@@ -83,13 +99,18 @@ public class TingleFragment extends Fragment{
 
             @Override
             public void onClick(View v) {
-                thingsDB.addThing(new Thing(newWhat.getText().toString(), newWhere.getText().toString()));
+                thing=new Thing(newWhat.getText().toString(), newWhere.getText().toString());
+                thingsDB.addThing(thing);
+
                 newWhat.setText("");
                 newWhere.setText("");
-                updateUI();
-                FragmentManager fm=getActivity().getSupportFragmentManager();
-                ListFragment fragment_list=(ListFragment)fm.findFragmentById(R.id.list_tingle);
-                if(fragment_list!=null)
+                prepare();
+                updateUI(thing);
+                mFile=thingsDB.getPhotoFile(thing);
+                mPhotoView.setImageResource(android.R.color.transparent);
+                FragmentManager fm = getActivity().getSupportFragmentManager();
+                ListFragment fragment_list = (ListFragment) fm.findFragmentById(R.id.list_tingle);
+                if (fragment_list != null)
                     fragment_list.updateUI();
             }
         });
@@ -118,19 +139,55 @@ public class TingleFragment extends Fragment{
                 }
             });
         }
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            mPhotoView = (ImageView) v.findViewById(R.id.tingle_photo);
+            mPhotoButton = (ImageButton) v.findViewById(R.id.use_camera);
 
-        mPhotoView=(ImageView) v.findViewById(R.id.tingle_photo);
-        mPhotoButton=(ImageButton) v.findViewById(R.id.use_camera);
+            final Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            boolean canTakePhoto = mFile != null;//&& intent.resolveActivity(pm)
+            if (canTakePhoto) {
+                Uri uri = Uri.fromFile(mFile);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+            }
+            mPhotoButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivityForResult(intent, REQUEST_PHOTO);
+                }
+            });
+
+        }
+
 
 
 
         return v;
     }
 
-    private void updateUI() {
+    private void updatePhoto(){
+        /*
+        if(mFile==null || !mFile.exists()){
+            mPhotoView.setImageDrawable(null);
+            Log.d("here", "without you");}
+        else{*/
+            Bitmap bitmap=BitmapMagic.getScaledBitmap(mFile.getPath(),getActivity());
+            mPhotoView.setImageBitmap(bitmap);
+
+
+    }
+
+    private void updateUI(Thing thing) {
+        if(thing!=null)
+            lastAdded.setText(thing.toString());
+        else
+            lastAdded.setText("Empty database");
+    }
+
+    private void prepare(){
         int s=thingsDB.size();
         if(s>0)
-            lastAdded.setText(thingsDB.get(s-1).toString());
+            thing=thingsDB.getLast();
+
     }
 
 
@@ -154,10 +211,15 @@ public class TingleFragment extends Fragment{
     }
     @Override
     public void onActivityResult(int requestCode,int resultCode,Intent intent){
+        if (requestCode==REQUEST_SCAN){
         String contents = intent.getStringExtra("SCAN_RESULT");
         String format = intent.getStringExtra("SCAN_RESULT_FORMAT");
 
         new FetchOutpanTask().execute(contents);
+        }else if(requestCode==REQUEST_PHOTO){
+            Log.d("here",mFile.getName());
+            updatePhoto();
+        }
     }
 
     public class CodeBarConnectivity {

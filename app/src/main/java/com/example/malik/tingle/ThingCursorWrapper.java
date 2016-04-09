@@ -23,4 +23,15 @@ public class ThingCursorWrapper extends CursorWrapper {
         Thing thing=new Thing(what,where);
         return thing;
     }
+
+    public Thing getThingWithID(){
+        String what=getString(getColumnIndex(ThingDbSchema.Cols.WHAT));
+        String where=getString(getColumnIndex(ThingDbSchema.Cols.WHERE));
+        int id=getInt(getColumnIndex("_id"));
+
+        Thing thing=new Thing(what,where);
+        thing.setID(id);
+
+        return thing;
+    }
 }

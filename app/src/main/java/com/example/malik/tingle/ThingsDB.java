@@ -3,8 +3,10 @@ package com.example.malik.tingle;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
+import android.util.Log;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -44,7 +46,7 @@ public class ThingsDB {
         mDatabase.insert(ThingDbSchema.ThingTable.NAME,null,values);
     }
     public int size(){
-        ThingCursorWrapper thingCursorWrapper=queryThings(null, null);
+      /*  ThingCursorWrapper thingCursorWrapper=queryThings(null, null);
         int size=0;
         try{
             thingCursorWrapper.moveToFirst();
@@ -55,7 +57,8 @@ public class ThingsDB {
         }finally {
             thingCursorWrapper.close();
         }
-        return size;
+        return size;*/
+        return (int) DatabaseUtils.queryNumEntries(mDatabase, ThingDbSchema.ThingTable.NAME);
     }
     public Thing get(int i){
         ThingCursorWrapper thingCursorWrapper=queryThings(null,null);
@@ -69,8 +72,30 @@ public class ThingsDB {
         return thing;
     }
 
+    public Thing get(String what){
+        Thing thing=null;
+        String[] str={what};
+        ThingCursorWrapper thingCursorWrapper=queryThings(ThingDbSchema.Cols.WHAT+"=?",str);
+        try{
+            thingCursorWrapper.moveToFirst();
+            boolean b=false;
+            while (!b || !thingCursorWrapper.isAfterLast()) {
+                thing = thingCursorWrapper.getThing();
+                if (thing.getmWhat().equals(what))
+                    b=true;
+            }
+        }finally {
+            thingCursorWrapper.close();
+        }
+        return thing;
+    }
+
     public void delete(int p){
+        Thing thing=get(p);
         mDatabase.execSQL("DELETE FROM "+ThingDbSchema.ThingTable.NAME+" WHERE _id in (SELECT _id FROM "+ThingDbSchema.ThingTable.NAME+" LIMIT 1 OFFSET "+p+")");
+        File file =new File(thing.getPhoto());
+        boolean b=file.delete();
+        Log.d("file deleted",b+"");
     }
 
     public Thing getLast(){

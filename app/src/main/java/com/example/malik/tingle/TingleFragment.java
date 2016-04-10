@@ -1,5 +1,6 @@
 package com.example.malik.tingle;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -57,6 +58,7 @@ public class TingleFragment extends Fragment{
     public void onResume(){
         super.onResume();
         updateUI(thing);
+        Log.d("azer","resume");
     }
 
     @Override
@@ -107,7 +109,10 @@ public class TingleFragment extends Fragment{
                 newWhere.setText("");
                 prepare();
                 updateUI(thing);
+                Log.d("added", thing.toString());
                 mFile=thingsDB.getPhotoFile(thing);
+                usePhoto();
+                // machakel
                 mPhotoView.setImageResource(android.R.color.transparent);
                 FragmentManager fm = getActivity().getSupportFragmentManager();
                 ListFragment fragment_list = (ListFragment) fm.findFragmentById(R.id.list_tingle);
@@ -122,8 +127,9 @@ public class TingleFragment extends Fragment{
             @Override
             public void onClick(View v) {
                 String thing=newWhat.getText().toString();
-                Thing t=searchMyThing(thing);
-                Toast.makeText(TingleFragment.this.getContext(), t.getmWhere(), Toast.LENGTH_SHORT).show();
+                SearchClass sc=new SearchClass(getContext());
+                sc.execute(thing);
+
 
 
             }
@@ -143,19 +149,7 @@ public class TingleFragment extends Fragment{
         if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             mPhotoView = (ImageView) v.findViewById(R.id.tingle_photo);
             mPhotoButton = (ImageButton) v.findViewById(R.id.use_camera);
-
-            final Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            boolean canTakePhoto = mFile != null;//&& intent.resolveActivity(pm)
-            if (canTakePhoto) {
-                Uri uri = Uri.fromFile(mFile);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
-            }
-            mPhotoButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    startActivityForResult(intent, REQUEST_PHOTO);
-                }
-            });
+            usePhoto();
 
         }
 
@@ -163,6 +157,24 @@ public class TingleFragment extends Fragment{
 
 
         return v;
+    }
+
+    private void usePhoto(){
+        final Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        boolean canTakePhoto = mFile != null;//&& intent.resolveActivity(pm)
+        if (canTakePhoto) {
+            Uri uri = Uri.fromFile(mFile);
+            Log.d("uri",mFile.getName());
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+        }
+        mPhotoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivityForResult(intent, REQUEST_PHOTO);
+            }
+        });
+
+
     }
 
     private void updatePhoto(){
@@ -179,7 +191,7 @@ public class TingleFragment extends Fragment{
 
     private void updateUI(Thing thing) {
         if(thing!=null)
-            lastAdded.setText(thing.toString());
+            lastAdded.setText(thing.toString()+thing.getID());
         else
             lastAdded.setText("Empty database");
     }
@@ -212,6 +224,9 @@ public class TingleFragment extends Fragment{
     }
     @Override
     public void onActivityResult(int requestCode,int resultCode,Intent intent){
+        if (resultCode != Activity.RESULT_OK) {
+            return;
+        }
         if (requestCode==REQUEST_SCAN){
         String contents = intent.getStringExtra("SCAN_RESULT");
         String format = intent.getStringExtra("SCAN_RESULT_FORMAT");

@@ -45,6 +45,10 @@ public class Thing  {
         id=i;
     }
 
+    public int getID(){
+        return id;
+    }
+
     public String getPhotoFilename(){
         int id=this.id+1;
         return "IMG"+id+".jpg";

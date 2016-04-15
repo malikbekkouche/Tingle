@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,12 +23,14 @@ public class DisplayFragment extends Fragment {
 
     private static ThingsDB thingsDB;
     public static String EXTRA_INT="com.malik.myInt";
+    public static String BIG="BIG";
 
     private TextView textView;
     private String display;
     private Button delete;
     private ImageView mPhotoView;
     private File mFile;
+    private static final String EXTRA="myFile";
 
 
     public void onCreate(Bundle savedInstanceState){
@@ -48,6 +51,16 @@ public class DisplayFragment extends Fragment {
         mFile=new File(thing.getPhoto());
         Bitmap bitmap=BitmapMagic.getScaledBitmap(mFile.getPath(),getActivity());
         mPhotoView.setImageBitmap(bitmap);
+
+        mPhotoView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("click", BIG+mFile.getName());
+                Intent intent=new Intent(getActivity(),ImageActivity.class);
+                intent.putExtra(EXTRA,mFile.getPath());
+                startActivity(intent);
+            }
+        });
 
 
         delete=(Button) v.findViewById(R.id.button_delete);

@@ -10,4 +10,5 @@
     <string name="delete">Delete</string>
     <string name="scan_barcode">scan barcode</string>
     <string name="camera">take picture</string>
+    <string name="title_activity_image">ImageActivity</string>
 </resources>

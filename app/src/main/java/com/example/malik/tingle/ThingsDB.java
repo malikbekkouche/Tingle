@@ -76,17 +76,20 @@ public class ThingsDB {
         Thing thing=null;
         String[] str={what};
         ThingCursorWrapper thingCursorWrapper=queryThings(ThingDbSchema.Cols.WHAT+"=?",str);
+        boolean b=true;
         try{
             thingCursorWrapper.moveToFirst();
-            boolean b=false;
-            while (!b || !thingCursorWrapper.isAfterLast()) {
+
+            while (b || !thingCursorWrapper.isAfterLast()) {
                 thing = thingCursorWrapper.getThing();
                 if (thing.getmWhat().equals(what))
-                    b=true;
+                    b=false;
+                thingCursorWrapper.moveToNext();
             }
         }finally {
             thingCursorWrapper.close();
         }
+        Log.d("waka",b+"");
         return thing;
     }
 

@@ -10,6 +10,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -28,11 +29,15 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 
 /**
@@ -53,6 +58,8 @@ public class TingleFragment extends Fragment{
     private ImageButton mPhotoButton;
     private Thing thing;
     private File mFile;
+    public static String BIG="BIG";
+
 
     @Override
     public void onResume(){
@@ -101,7 +108,7 @@ public class TingleFragment extends Fragment{
 
             @Override
             public void onClick(View v) {
-                thing=new Thing(newWhat.getText().toString(), newWhere.getText().toString());
+                thing = new Thing(newWhat.getText().toString(), newWhere.getText().toString());
                 thing.setPhoto(mFile.getPath());
                 thingsDB.addThing(thing);
 
@@ -110,9 +117,8 @@ public class TingleFragment extends Fragment{
                 prepare();
                 updateUI(thing);
                 Log.d("added", thing.toString());
-                mFile=thingsDB.getPhotoFile(thing);
+                mFile = thingsDB.getPhotoFile(thing);
                 usePhoto();
-                // machakel
                 mPhotoView.setImageResource(android.R.color.transparent);
                 FragmentManager fm = getActivity().getSupportFragmentManager();
                 ListFragment fragment_list = (ListFragment) fm.findFragmentById(R.id.list_tingle);
@@ -127,7 +133,7 @@ public class TingleFragment extends Fragment{
             @Override
             public void onClick(View v) {
                 String thing=newWhat.getText().toString();
-                SearchClass sc=new SearchClass(getContext());
+                SearchClass sc=new SearchClass(thingsDB,getContext());
                 sc.execute(thing);
 
 
@@ -156,6 +162,8 @@ public class TingleFragment extends Fragment{
 
 
 
+
+
         return v;
     }
 
@@ -177,13 +185,50 @@ public class TingleFragment extends Fragment{
 
     }
 
+    public void copy(File src, File dst) throws IOException {
+        InputStream in = new FileInputStream(src);
+        OutputStream out = new FileOutputStream(dst);
+
+        // Transfer bytes from in to out
+        byte[] buf = new byte[1024];
+        int len;
+        while ((len = in.read(buf)) > 0) {
+            out.write(buf, 0, len);
+        }
+        in.close();
+        out.close();
+    }
+
+    public void copy2(File src, File dst) throws IOException {
+        FileInputStream inStream = new FileInputStream(src);
+        FileOutputStream outStream = new FileOutputStream(dst);
+        FileChannel inChannel = inStream.getChannel();
+        FileChannel outChannel = outStream.getChannel();
+        inChannel.transferTo(0, inChannel.size(), outChannel);
+        inStream.close();
+        outStream.close();
+    }
+
+
+
     private void updatePhoto(){
         /*
         if(mFile==null || !mFile.exists()){
             mPhotoView.setImageDrawable(null);
             Log.d("here", "without you");}
         else{*/
+        File dir=getActivity().getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File file=new File(dir,BIG+mFile.getName());
+            if(file.exists())
+                Log.d("ee","dadadada");
+            try {
+                copy(mFile, file);
+                Log.d(mFile.getName(),file.getName());
+            }catch(IOException e){
+                Log.d("IOEXCEPTION",file.getPath());
+            }
             Bitmap bitmap=BitmapMagic.getScaledBitmap(mFile.getPath(),getActivity());
+            Log.d("gege",mFile.getName());
             mPhotoView.setImageBitmap(bitmap);
 
 
